@@ -11,12 +11,12 @@ import pytest
 from vibesys.run.git_events import NullGitTrackerEvents
 from vibesys.run.git_tracker import GitTracker
 from vibesys.run.project_policy import trusted_project_input_paths
-from vs_project import PlainRunConfiguration, Project, RunEnvironmentRecord
+from vs_project.api import PlainRunConfiguration, Project, RunEnvironmentRecord
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from vs_project import StateSnapshot
+    from vs_project.api import StateSnapshot
 
 _IDENTITY = {
     "GIT_AUTHOR_NAME": "test",
