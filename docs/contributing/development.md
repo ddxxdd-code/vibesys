@@ -180,6 +180,24 @@ work, see [`docs/contributing/openevolve.md`](openevolve.md).
 Every pull request must pass the following gates before it can be merged.
 You can run each one locally before pushing.
 
+The `changes` job reads `.repoctl/components.toml` for ownership, discovery,
+and dependency policy, and `.repoctl/checks.toml` for executable check groups
+and native commands. `support/repoctl/` provides configurable adapters for
+language and package manifests. The component graph records cross-component
+effects those manifests cannot express. The job prints each selection and its
+reason; an unowned changed path fails selection instead of silently skipping
+checks. To run the selected checks locally, use one command:
+
+```bash
+./support/repoctl/repoctl test
+```
+
+Use `./support/repoctl/repoctl plan` to inspect the selection without running checks.
+The workflow runs named check groups from `.repoctl/checks.toml`. Run
+`./support/repoctl/repoctl verify-policy --cases tests/repoctl/cases.toml` after
+changing component ownership or dependencies; CI runs this contract check before
+selecting jobs.
+
 ### Format
 
 ```bash
@@ -188,11 +206,11 @@ You can run each one locally before pushing.
 
 Runs `ruff format --check` (whitespace, line length, blank lines) and
 `ruff check --select I` (import order) across `src`, `tests`, `examples`,
-`resources`, and `libs`. To auto-fix locally:
+`resources`, `libs`, and `support`. To auto-fix locally:
 
 ```bash
-uv run ruff format src tests examples resources libs
-uv run ruff check --select I --fix src tests examples resources libs
+uv run ruff format src tests examples resources libs support
+uv run ruff check --select I --fix src tests examples resources libs support
 ```
 
 ### Lint
