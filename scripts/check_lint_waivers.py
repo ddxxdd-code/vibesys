@@ -8,7 +8,7 @@ file set, tokenizes comments so strings and docstrings do not count, and uses
 the Python AST to ensure each suppression belongs to a source node.
 
 Usage:
-    uv run python scripts/check_lint_waivers.py
+    uv run python scripts/check_lint_waivers.py.
 """
 
 from __future__ import annotations
@@ -50,9 +50,7 @@ NOQA_RE = re.compile(
     r"#\s*(?:ruff:\s*)?noqa\b(?::\s*([A-Z][A-Z0-9]*(?:\s*,\s*[A-Z][A-Z0-9]*)*))?",
     re.IGNORECASE,
 )
-WAIVER_RE = re.compile(
-    r"#\s*(?:lint-waiver:\s*)?(LW-\d{6})(?:\s+\[([A-Z0-9, ]+)\])?\s*;\s*(.*)$"
-)
+WAIVER_RE = re.compile(r"#\s*(?:lint-waiver:\s*)?(LW-\d{6})(?:\s+\[([A-Z0-9, ]+)\])?\s*;\s*(.*)$")
 WAIVER_CONTINUATION_RE = re.compile(r"#\s*(?:lint-waiver\+:|>\s*)(.*)$")
 WAIVER_ID_RE = re.compile(r"LW-\d{6}\Z")
 
@@ -201,9 +199,7 @@ def _waiver_reason(marker: re.Match[str], line: int, comments_by_line: dict[int,
     parts = [marker.group(3).strip()]
     continuation_line = line + 1
     while continuation_line in comments_by_line:
-        continuation = WAIVER_CONTINUATION_RE.fullmatch(
-            comments_by_line[continuation_line].strip()
-        )
+        continuation = WAIVER_CONTINUATION_RE.fullmatch(comments_by_line[continuation_line].strip())
         if continuation is None:
             break
         parts.append(continuation.group(1).strip())
@@ -224,14 +220,14 @@ def scan_source_file(path: Path, repo_root: Path) -> tuple[list[SourceWaiver], l
     comments_by_line = {
         token.start[0]: token.string for token in tokens if token.type == tokenize.COMMENT
     }
-    waivers, waiver_failures = _source_waivers(
-        tokens, tree, relative, comments_by_line, directives
-    )
+    waivers, waiver_failures = _source_waivers(tokens, tree, relative, comments_by_line, directives)
     failures.extend(waiver_failures)
     if not failures and _rule_counts(directives.values()) != _rule_counts(
         waiver.rules for waiver in waivers
     ):
-        failures.append(f"{relative}: source waiver comments do not match its noqa directive counts")
+        failures.append(
+            f"{relative}: source waiver comments do not match its noqa directive counts"
+        )
     return waivers, failures
 
 
